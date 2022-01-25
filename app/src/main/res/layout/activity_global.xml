@@ -15,6 +15,21 @@
         tools:layout_editor_absoluteY="1dp"
         tools:ignore="MissingConstraints">
 
+        <TextView
+            android:id="@+id/textView_update_total"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:gravity="center"
+            android:text=""
+            android:textColor="@color/gray"
+            android:textSize="14sp"
+            android:textAlignment="center"/>
+
+        <com.github.mikephil.charting.charts.PieChart
+            android:id="@+id/chart_total"
+            android:layout_width="match_parent"
+            android:layout_height="250dp" />
+
         <ListView
             android:id="@+id/listView_statistics"
             android:layout_width="match_parent"

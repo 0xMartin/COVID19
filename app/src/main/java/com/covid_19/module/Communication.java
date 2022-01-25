@@ -28,12 +28,15 @@ public class Communication {
         //request a string response from the provided URL.
         StringRequest stringRequest = new StringRequest(Request.Method.GET, url,
                 response -> {
-                    Log.d("COM", response);
+                    Log.d("Communication", response);
                     msg.parseJSONMain(response);
                 },
                 error -> {
-                    Log.d("COM ", "API request error");
-                    msg.error();
+                    Log.d("Communication ", "API request error");
+                    try {
+                        msg.error();
+                    } catch (ClassCastException ignored) {
+                    }
                 }) {
             @Override
             public Map<String, String> getHeaders() throws AuthFailureError {
@@ -48,13 +51,13 @@ public class Communication {
         queue.add(stringRequest);
     }
 
-    public static abstract class Message {
+    public static abstract class Message implements DataStore.StorableObject {
 
         public abstract String getAPIURL();
         public abstract void parseJSON(String json);
-        public abstract void error();
+        public abstract void error() throws ClassCastException;
 
-        private final void parseJSONMain(String json) {
+        private void parseJSONMain(String json) {
             this.parseJSON(json);
             this.onResponseEvent(this);
         }

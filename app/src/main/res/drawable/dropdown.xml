@@ -6,6 +6,9 @@
         android:width="1dp"
         android:color="@color/gray" />
 
+    <solid
+        android:color="@color/transparent_black"/>
+
     <padding
         android:left="12dp"
         android:right="12dp"

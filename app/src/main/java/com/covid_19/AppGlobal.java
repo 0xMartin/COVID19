@@ -1,41 +1,57 @@
 package com.covid_19;
 
+import android.annotation.SuppressLint;
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.util.Log;
 
-import androidx.lifecycle.ViewModel;
-
 import com.covid_19.module.BackgroundAnimation;
 import com.covid_19.module.Communication;
-
-import java.util.Locale;
+import com.covid_19.module.DataStore;
 
 public class AppGlobal {
 
-    private static Context context;
+    private final Context context;
 
-    public static BackgroundAnimation animation;
+    public BackgroundAnimation animation;
 
-    public static Communication communication;
+    public Communication communication;
 
-    public static void init(Context context) {
-        AppGlobal.context = context;
+    public DataStore dataStore;
+
+    @SuppressLint("StaticFieldLeak")
+    private static AppGlobal appGlobal = null;
+
+
+    private AppGlobal(Context context) {
+        this.context = context;
 
         //Communication
-        AppGlobal.communication = new Communication(context);
+        this.communication = new Communication(context);
+
+        //DataBackup
+        this.dataStore = new DataStore(context);
 
         //BackgroundAnimation
-        AppGlobal.animation = new BackgroundAnimation(context, 5, 20);
-        AppGlobal.animation.init();
+        this.animation = new BackgroundAnimation(context, 5, 20);
+        this.animation.init();
 
         //load settings from storage
-        AppGlobal.loadSettings();
-
-        Log.d("APP", "init done");
+        this.loadSettings();
     }
 
-    public static String getFormatedNumber(int number) {
+    public static void init(Context context) {
+        if(AppGlobal.appGlobal == null) {
+            AppGlobal.appGlobal = new AppGlobal(context);
+            Log.d("APP", "init done");
+        }
+    }
+
+    public static AppGlobal getInstance() {
+        return AppGlobal.appGlobal;
+    }
+
+    public String getFormatedNumber(int number) {
         String num = Integer.toString(number);
         StringBuilder builder = new StringBuilder();
         for(int i = 0; i < num.length(); ++i) {
@@ -47,15 +63,17 @@ public class AppGlobal {
         return builder.reverse().toString();
     }
 
-    public static String getFlagEmoji(String countryCode) {
+    public String getFlagEmoji(String countryCode) {
+        if(countryCode.length() == 0) return "";
+
         countryCode = countryCode.toUpperCase();
         int firstLetter = Character.codePointAt(countryCode, 0) - 0x41 + 0x1F1E6;
         int secondLetter = Character.codePointAt(countryCode, 1) - 0x41 + 0x1F1E6;
         return new String(Character.toChars(firstLetter)) + new String(Character.toChars(secondLetter));
     }
 
-    public synchronized static void storeSettings() {
-        SharedPreferences settings = AppGlobal.context.getSharedPreferences("SETTINGS", 0);
+    public synchronized void storeSettings() {
+        SharedPreferences settings = this.context.getSharedPreferences("SETTINGS", 0);
         SharedPreferences.Editor editor = settings.edit();
 
         editor.putBoolean("updateTime_visible", Setting.updateTime_visible);
@@ -68,9 +86,9 @@ public class AppGlobal {
         editor.apply();
     }
 
-    public synchronized static void loadSettings() {
+    public synchronized void loadSettings() {
         // Get from the SharedPreferences
-        SharedPreferences settings = AppGlobal.context.getSharedPreferences("SETTINGS", 0);
+        SharedPreferences settings = this.context.getSharedPreferences("SETTINGS", 0);
         Setting.updateTime_visible = settings.getBoolean("updateTime_visible", true);
         Setting.confirmed_visible = settings.getBoolean("confirmed_visible", true);
         Setting.recovered_visible = settings.getBoolean("recovered_visible", true);

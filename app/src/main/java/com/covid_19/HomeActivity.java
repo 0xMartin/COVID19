@@ -5,6 +5,7 @@ import androidx.appcompat.app.AppCompatActivity;
 import android.annotation.SuppressLint;
 import android.content.Intent;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.FrameLayout;
@@ -18,6 +19,8 @@ import java.util.Objects;
 
 public class HomeActivity extends AppCompatActivity {
 
+    private TextView textView_country, textView_confirmed, textView_update, textView_recovered, textView_critical, textView_deaths;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -26,8 +29,8 @@ public class HomeActivity extends AppCompatActivity {
 
         //bg animation
         final FrameLayout frameLayout = findViewById(R.id.background_home);
-        if(AppGlobal.animation != null) {
-            frameLayout.addView(AppGlobal.animation, 0);
+        if(AppGlobal.getInstance().animation != null) {
+            frameLayout.addView(AppGlobal.getInstance().animation, 0);
         }
 
 
@@ -54,15 +57,51 @@ public class HomeActivity extends AppCompatActivity {
             Intent intent = new Intent(getApplicationContext(), SettingsActivity.class);
             startActivity(intent);
         });
+
+        textView_country = findViewById(R.id.textView_country);
+        textView_confirmed = findViewById(R.id.textView_confirmed);
+        textView_update = findViewById(R.id.textView_update);
+        textView_recovered = findViewById(R.id.textView_recovered);
+        textView_critical = findViewById(R.id.textView_critical);
+        textView_deaths = findViewById(R.id.textView_deaths);
     }
 
     @Override
     protected void onStart() {
         super.onStart();
-        AppGlobal.animation.run();
+        if(AppGlobal.getInstance().animation != null) {
+            AppGlobal.getInstance().animation.run();
+        }
 
-        //home country stats
-        updateStats();
+        //update stats
+        Covid19CountryData covid19CountryData = new Covid19CountryData(AppGlobal.Setting.homeCountryCode) {
+            @SuppressLint("SetTextI18n")
+            @Override
+            public void onResponseEvent(Communication.Message msg) {
+                Covid19CountryData data = (Covid19CountryData) msg;
+                try {
+                    showData(data);
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+                //store data
+                AppGlobal.getInstance().dataStore.store("home_activity", data);
+            }
+
+            @Override
+            public void error() throws ClassCastException {
+                //load data
+                Covid19CountryData data = new Covid19CountryData("");
+                if(AppGlobal.getInstance().dataStore.load("home_activity", data)) {
+                    try {
+                        showData(data);
+                    } catch (Exception e) {
+                        e.printStackTrace();
+                    }
+                }
+            }
+        };
+        AppGlobal.getInstance().communication.fetch(covid19CountryData);
 
         //(Settings) apply visibility
         final TextView textView_update = findViewById(R.id.textView_update);
@@ -84,33 +123,21 @@ public class HomeActivity extends AppCompatActivity {
     @Override
     protected void onPause() {
         super.onPause();
-        AppGlobal.animation.stop();
+        if(AppGlobal.getInstance().animation != null) {
+            AppGlobal.getInstance().animation.stop();
+        }
     }
 
-    public void updateStats() {
-        final TextView textView_country = findViewById(R.id.textView_country);
-        final TextView textView_confirmed = findViewById(R.id.textView_confirmed);
-        final TextView textView_update = findViewById(R.id.textView_update);
-        final TextView textView_recovered = findViewById(R.id.textView_recovered);
-        final TextView textView_critical = findViewById(R.id.textView_critical);
-        final TextView textView_deaths = findViewById(R.id.textView_deaths);
-
-        Covid19CountryData data = new Covid19CountryData(AppGlobal.Setting.homeCountryCode) {
-            @SuppressLint("SetTextI18n")
-            @Override
-            public void onResponseEvent(Communication.Message msg) {
-                Covid19CountryData data = (Covid19CountryData) msg;
-                textView_country.setText(data.country + " " + AppGlobal.getFlagEmoji(data.countyCode));
-                String date = data.lastUpdate.replace("T", " ");
-                date = date.substring(0, date.indexOf("+"));
-                textView_update.setText(getResources().getString(R.string.last_update) + ": " + date);
-                textView_confirmed.setText(AppGlobal.getFormatedNumber(data.confirmed));
-                textView_recovered.setText(AppGlobal.getFormatedNumber(data.recovered));
-                textView_critical.setText(AppGlobal.getFormatedNumber(data.critical));
-                textView_deaths.setText(AppGlobal.getFormatedNumber(data.deaths));
-            }
-        };
-        AppGlobal.communication.fetch(data);
+    @SuppressLint("SetTextI18n")
+    private void showData(Covid19CountryData data) throws Exception {
+        textView_country.setText(data.country + " " + AppGlobal.getInstance().getFlagEmoji(data.countyCode));
+        String date = data.lastUpdate.replace("T", " ");
+        date = date.substring(0, date.indexOf("+"));
+        textView_update.setText(getResources().getString(R.string.last_update) + ": " + date);
+        textView_confirmed.setText(AppGlobal.getInstance().getFormatedNumber(data.confirmed));
+        textView_recovered.setText(AppGlobal.getInstance().getFormatedNumber(data.recovered));
+        textView_critical.setText(AppGlobal.getInstance().getFormatedNumber(data.critical));
+        textView_deaths.setText(AppGlobal.getInstance().getFormatedNumber(data.deaths));
     }
 
 }

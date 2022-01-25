@@ -3,28 +3,27 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:orientation="horizontal">
+    android:orientation="horizontal"
+    android:paddingHorizontal="20dp">
 
     <TextView
-        android:id="@+id/flag"
+        android:id="@+id/flag_country_item"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:paddingStart="30dp"
         android:paddingTop="10dp"
         android:paddingEnd="20dp"
         android:paddingBottom="10dp"
         android:textColor="@color/white"
-        android:textSize="18sp" />
+        android:textSize="18sp"
+        tools:ignore="RtlSymmetry" />
 
     <TextView
-        android:id="@+id/name"
+        android:id="@+id/name_country_item"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:textSize="16sp"
         android:textStyle="bold"
         android:paddingTop="10dp"
         android:paddingBottom="10dp"
-        android:paddingStart="30dp"
-        android:paddingEnd="20dp"
         android:textColor="@color/white" />
 </LinearLayout>

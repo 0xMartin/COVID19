@@ -3,15 +3,17 @@ package com.covid_19.covid19msg;
 import android.util.Log;
 
 import com.covid_19.module.Communication;
+import com.covid_19.module.DataStore;
 
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 
-public class Covid19CountryList extends Communication.Message {
+public class Covid19CountryList extends Communication.Message  {
 
     public static class Country {
         public String code;
@@ -43,13 +45,35 @@ public class Covid19CountryList extends Communication.Message {
             }
 
         } catch (JSONException e) {
-            Log.d("Covid19CountryData Exception", e.getMessage());
+            Log.d("Covid19CountryList Exception", e.getMessage());
         }
     }
 
     @Override
     public void error() {
 
+    }
+
+    @Override
+    public String dataToString() {
+        JSONArray array = new JSONArray();
+        for(Covid19CountryList.Country data : this.countries) {
+            JSONObject jObject = new JSONObject();
+            try {
+                jObject.put("alpha2code", data.code);
+                jObject.put("name", data.name);
+            } catch (JSONException e) {
+                e.printStackTrace();
+            }
+            array.put(jObject);
+        }
+
+        return array.toString();
+    }
+
+    @Override
+    public void stringToData(String str) {
+        this.parseJSON(str);
     }
 
 }
