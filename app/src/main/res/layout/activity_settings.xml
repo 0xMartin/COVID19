@@ -36,7 +36,7 @@
                 android:spinnerMode="dropdown"
                 android:dropDownVerticalOffset="100dp"
                 android:dropDownWidth="match_parent"
-                android:layout_marginTop="12dp"/>
+                android:layout_marginTop="12dp" />
 
             <TableLayout
                 android:layout_width="match_parent"
@@ -60,8 +60,7 @@
                         android:id="@+id/switch_update"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:thumbTint="@color/white"
-                        android:trackTint="@color/white"
+                        android:theme="@style/SCBSwitch"
                         tools:ignore="UseSwitchCompatOrMaterialXml" />
 
                 </TableRow>
@@ -83,8 +82,7 @@
                         android:id="@+id/switch_confirmed"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:thumbTint="@color/white"
-                        android:trackTint="@color/white"
+                        android:theme="@style/SCBSwitch"
                         tools:ignore="UseSwitchCompatOrMaterialXml" />
 
                 </TableRow>
@@ -106,8 +104,7 @@
                         android:id="@+id/switch_recovered"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:thumbTint="@color/white"
-                        android:trackTint="@color/white"
+                        android:theme="@style/SCBSwitch"
                         tools:ignore="UseSwitchCompatOrMaterialXml" />
 
                 </TableRow>
@@ -129,8 +126,7 @@
                         android:id="@+id/switch_critical"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:thumbTint="@color/white"
-                        android:trackTint="@color/white"
+                        android:theme="@style/SCBSwitch"
                         tools:ignore="UseSwitchCompatOrMaterialXml" />
 
                 </TableRow>
@@ -152,8 +148,7 @@
                         android:id="@+id/switch_deaths"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:thumbTint="@color/white"
-                        android:trackTint="@color/white"
+                        android:theme="@style/SCBSwitch"
                         tools:ignore="UseSwitchCompatOrMaterialXml" />
 
                 </TableRow>

@@ -5,7 +5,8 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="@drawable/bg_gradient"
-    tools:context=".GlobalActivity">
+    tools:context=".GlobalActivity"
+    app:theme="@style/SearchViewStyle">
 
     <LinearLayout
         android:layout_width="match_parent"
@@ -29,6 +30,15 @@
             android:id="@+id/chart_total"
             android:layout_width="match_parent"
             android:layout_height="250dp" />
+
+        <SearchView
+            android:id="@+id/searchView_countries"
+            android:layout_width="match_parent"
+            android:layout_height="40dp"
+            android:background="@drawable/border"
+            android:layout_marginHorizontal="20dp"
+            android:layout_marginTop="15dp"
+            android:layout_marginBottom="5dp"/>
 
         <ListView
             android:id="@+id/listView_statistics"

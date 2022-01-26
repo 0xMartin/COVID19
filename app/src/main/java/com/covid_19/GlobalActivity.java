@@ -7,13 +7,17 @@ import android.annotation.SuppressLint;
 import android.content.Intent;
 import android.os.Bundle;
 import android.os.Handler;
+import android.text.Html;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
+import android.widget.EditText;
 import android.widget.ListView;
+import android.widget.SearchView;
 import android.widget.TextView;
 
 import com.covid_19.covid19msg.Covid19CountryData;
@@ -28,12 +32,17 @@ import com.github.mikephil.charting.utils.ColorTemplate;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Locale;
 import java.util.Objects;
 
 public class GlobalActivity extends AppCompatActivity {
 
     private PieChart pieChart;
     private TextView textView_update_total;
+    private SearchView searchView_countries;
+    private ListView listView;
+
+    private List<Covid19CountryList.Country> list = null;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -44,8 +53,51 @@ public class GlobalActivity extends AppCompatActivity {
         ActionBar actionBar = getSupportActionBar();
         Objects.requireNonNull(actionBar).setDisplayHomeAsUpEnabled(true);
 
+        //list
+        listView = findViewById(R.id.listView_statistics);
+
+        //graph
         pieChart = findViewById(R.id.chart_total);
         textView_update_total = findViewById(R.id.textView_update_total);
+
+        //search
+        searchView_countries = findViewById(R.id.searchView_countries);
+        searchView_countries.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
+            @Override
+            public boolean onQueryTextSubmit(String query) {
+                String name = query.toLowerCase();
+                if(list != null) {
+                    int best_index = 0;
+                    float best = 0;
+
+                    int i = 0;
+                    for(Covid19CountryList.Country c : list) {
+                        String cn = c.name.toLowerCase();
+                        int cnt = 0;
+                        for(int j = 0; j < cn.length() && j < name.length(); j++) {
+                            if(name.charAt(j) == cn.charAt(j)) {
+                                cnt++;
+                            }
+                        }
+                        float now = (float) cnt / name.length();
+                        if(now > best) {
+                            best = now;
+                            best_index = i;
+                        }
+                        i++;
+                    }
+
+                    Log.d("Find", best_index + ", " + list.get(best_index).name + ", " + best);
+
+                    listView.smoothScrollToPosition(best_index);
+                }
+                return false;
+            }
+            @Override
+            public boolean onQueryTextChange(String newText) {
+                return false;
+            }
+        });
     }
 
     @Override
@@ -61,7 +113,6 @@ public class GlobalActivity extends AppCompatActivity {
             @Override
             public void run() {
                 AppGlobal.getInstance().communication.fetch(covid19TotalData);
-
             }
         }, 1200);
     }
@@ -103,6 +154,8 @@ public class GlobalActivity extends AppCompatActivity {
     };
 
     private void updateListData(List<Covid19CountryList.Country> countryDataList) throws Exception {
+        this.list = countryDataList;
+
         //create list adapter
         ArrayAdapter<Covid19CountryList.Country> adapter = new ArrayAdapter<Covid19CountryList.Country>(
                 this, R.layout.item_country, countryDataList) {
@@ -121,7 +174,6 @@ public class GlobalActivity extends AppCompatActivity {
         };
 
         //set adapter for listview
-        ListView listView = findViewById(R.id.listView_statistics);
         listView.setAdapter(adapter);
 
         listView.setOnItemClickListener(new AdapterView.OnItemClickListener(){

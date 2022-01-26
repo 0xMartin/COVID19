@@ -12,7 +12,6 @@ import android.view.MenuItem;
 import android.widget.TextView;
 
 import com.covid_19.covid19msg.Covid19CountryData;
-import com.covid_19.covid19msg.Covid19CountryList;
 import com.covid_19.module.Communication;
 import com.github.mikephil.charting.charts.PieChart;
 import com.github.mikephil.charting.data.PieData;
